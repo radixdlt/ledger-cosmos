@@ -53,7 +53,7 @@ git submodule update --init --recursive
    pip install conan
    ```
    
-- Before running the `make` command below, run:
+- Before running the `make` commands below, run:
 
   `pip install virtualenv`
   `virtualenv ledger`
