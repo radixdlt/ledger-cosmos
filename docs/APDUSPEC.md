@@ -11,14 +11,14 @@ The general structure of commands and responses is as follows:
 | INS     | byte (1) | Instruction ID         |      |
 | P1      | byte (1) | Parameter 1            |      |
 | P2      | byte (1) | Parameter 2            |      |
-| L       | byte (1) | Bytes in payload       |      |
+| L       |byte (0-2)| Bytes in payload       |      |
 | PAYLOAD | byte (L) | Payload                |      |
 
 #### Response
 
 | Field   | Type     | Content     | Note                     |
 | ------- | -------- | ----------- | ------------------------ |
-| ANSWER  | byte (?) | Answer      | depends on the command   |
+| ANSWER  | byte (0-3) | Answer      | depends on the command   |
 | SW1-SW2 | byte (2) | Return code | see list of return codes |
 
 #### Return codes
@@ -71,35 +71,17 @@ The general structure of commands and responses is as follows:
 | ----- | --------- | ---------------------------------- | --------- |
 | CLA   | byte (1)  | Application Identifier             | 0xAA      |
 | INS   | byte (1)  | Instruction ID                     | 0x02      |
-| P1    | byte (1)  | Payload desc                       | 0 = init  |
-|       |           |                                    | 1 = add   |
-|       |           |                                    | 2 = last  |
+| P1    | byte (1)  | ----                               | not used  |
 | P2    | byte (1)  | ----                               | not used  |
 | L     | byte (2*) | Length of "message" (2nd packet)   | (depends) |
+| Data  | byte (L)  | L* number of bytes, a DSON* (CBOR*) serialized atom* |          |      
+
+
 *L: N.B. not all of those 16 bits can be used, in fact, [this document](https://buildmedia.readthedocs.org/media/pdf/ledger/latest/ledger.pdf) (section 18.1) suggests,
 that the max size of an application is 4096 bytes. Those we ought to limit 
 max size of Message (DSON byte array) to max 2048 bytes, i.e. 11 bits.
 
 
-The first packet/chunk includes only the derivation path
-
-All other packets/chunks should contain message to sign 
-
-*First Packet*
-
-| Field      | Type     | Content                | Expected  |
-| ---------- | -------- | ---------------------- | --------- |
-| Path[0]    | byte (4) | Derivation Path Data   | 44        |
-| Path[1]    | byte (4) | Derivation Path Data   | 536       |
-| Path[2]    | byte (4) | Derivation Path Data   | ?         |
-| Path[3]    | byte (4) | Derivation Path Data   | ?         |
-| Path[4]    | byte (4) | Derivation Path Data   | ?         |
-
-*Other Chunks/Packets*
-
-| Field   | Type     | Content                                              | Expected |
-| ------- | -------- | ---------------------------------------------------- | -------- |
-| Message | bytes... | L* number of bytes, a DSON* (CBOR*) serialized atom* |          |
 *L: Length of message, as an unsigned integer with 11 bits size, this value (field)
 is provided in initial `INS_SIGN_SECP256K1` command.
 *DSON: is Radix DLT's own binary format, based on CBOR
