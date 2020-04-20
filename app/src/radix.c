@@ -57,7 +57,6 @@ void compressPubKey(cx_ecfp_public_key_t *publicKey) {
     }
 
     publicKey->W_len = PUBLIC_KEY_COMPRESSEED_BYTE_COUNT;
-    PLOC();
 }
 
 void deriveRadixPubKey(
@@ -74,13 +73,12 @@ void deriveRadixPubKey(
     assert (publicKey);
     cx_ecfp_init_public_key(CX_CURVE_SECP256K1, NULL, 0, publicKey);
     cx_ecfp_generate_pair(CX_CURVE_SECP256K1, publicKey, &pk, 1);
-    PRINTF("publicKey:\n %.*H \n\n", publicKey->W_len, publicKey->W);
+    PRINTF("Uncompressed PublicKey:\n %.*H \n\n", publicKey->W_len, publicKey->W);
 
     compressPubKey(publicKey);
 
     os_memset(keySeed, 0, sizeof(keySeed));
     os_memset(&pk, 0, sizeof(pk));
-    PLOC();
 }
 
 // void deriveAndSign(uint8_t *dst, uint32_t dst_len, uint32_t index, const uint8_t *msg, unsigned int msg_len) {
